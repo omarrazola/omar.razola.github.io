@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyectos - Omar Razo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Crimson+Text:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563EB;
+            --secondary: #F8FAFC;
+            --accent: #1E293B;
+            --text: #0F172A;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .hero-title {
+            font-family: 'Crimson Text', serif;
+            font-weight: 700;
+        }
+        
+        .nav-blur {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .project-card {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+        
+        .project-card.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .filter-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .particle-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 2% auto;
+            padding: 0;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 12px;
+            overflow: hidden;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 10px 15px;
+        }
+        
+        .close:hover {
+            color: black;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+    <!-- Particle Background -->
+    <div id="particle-container" class="particle-bg"></div>
+    
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 nav-blur transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-white">OR</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="index.html" class="text-white hover:text-blue-200 px-3 py-2 text-sm font-medium transition-colors">Inicio</a>
+                        <a href="aboutme.html" class="text-white hover:text-blue-200 px-3 py-2 text-sm font-medium transition-colors">Sobre Mí</a>
+                        <a href="projects.html" class="text-blue-200 px-3 py-2 text-sm font-medium">Proyectos</a>
+                        <a href="contact.html" class="text-white hover:text-blue-200 px-3 py-2 text-sm font-medium transition-colors">Contacto</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-24 pb-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="hero-title text-5xl md:text-6xl text-white mb-6">
+                Mis Proyectos
+            </h1>
+            <p class="text-xl text-gray-200 mb-8 max-w-3xl mx-auto">
+                Una colección de mis trabajos más recientes y significativos en diseño UX/UI, 
+                desde aplicaciones móviles hasta plataformas web complejas.
+            </p>
+        </div>
+    </section>
+
+    <!-- Filter Section -->
+    <section class="py-8 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap justify-center gap-4 mb-8">
+                <button class="filter-btn active px-6 py-2 rounded-full border-2 border-blue-600 text-blue-600 font-medium" 
+                        data-filter="all">Todos</button>
+                <button class="filter-btn px-6 py-2 rounded-full border-2 border-blue-600 text-blue-600 font-medium" 
+                        data-filter="mobile">Mobile</button>
+                <button class="filter-btn px-6 py-2 rounded-full border-2 border-blue-600 text-blue-600 font-medium" 
+                        data-filter="web">Web</button>
+                <button class="filter-btn px-6 py-2 rounded-full border-2 border-blue-600 text-blue-600 font-medium" 
+                        data-filter="research">Research</button>
+                <button class="filter-btn px-6 py-2 rounded-full border-2 border-blue-600 text-blue-600 font-medium" 
+                        data-filter="redesign">Redesign</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Grid -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Project 1 -->
+                <div class="project-card bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer" 
+                     data-category="mobile" data-project="taskmanager">
+                    <img src="resources/mobile-app-1.png" alt="Task Manager App" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">App de Gestión de Tareas</h3>
+                        <p class="text-gray-600 mb-4">Aplicación móvil para mejorar la productividad personal con enfoque en la experiencia del usuario</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">UI Design</span>
+                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Mobile</span>
+                            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">UX Research</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-blue-600 font-medium">Ver detalles</span>
+                            <span class="text-gray-500 text-sm">2024</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="project-card bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer" 
+                     data-category="web" data-project="analytics">
+                    <img src="resources/dashboard-1.png" alt="Analytics Dashboard" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Dashboard Analytics</h3>
+                        <p class="text-gray-600 mb-4">Panel de control para análisis de datos empresariales con visualizaciones interactivas</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">UX Research</span>
+                            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">Web</span>
+                            <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">Data Viz</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-blue-600 font-medium">Ver detalles</span>
+                            <span class="text-gray-500 text-sm">2024</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="project-card bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer" 
+                     data-category="redesign" data-project="ecommerce">
+                    <img src="resources/ecommerce-1.png" alt="E-commerce Platform" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Rediseño E-commerce</h3>
+                        <p class="text-gray-600 mb-4">Rediseño completo de plataforma de comercio electrónico para mejorar la conversión</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">Redesign</span>
+                            <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">E-commerce</span>
+                            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Conversion</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-blue-600 font-medium">Ver detalles</span>
+                            <span class="text-gray-500 text-sm">2023</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 4 -->
+                <div class="project-card bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer" 
+                     data-category="mobile" data-project="fitness">
+                    <img src="https://kimi-web-img.moonshot.cn/img/mir-s3-cdn-cf.behance.net/670361a43ceb97b509128a73ac74d7e2eb3e7fb8.png" alt="Fitness App" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">App de Fitness</h3>
+                        <p class="text-gray-600 mb-4">Aplicación móvil para seguimiento de rutinas de ejercicio y nutrición</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Mobile</span>
+                            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Health</span>
+                            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">UX Research</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-blue-600 font-medium">Ver detalles</span>
+                            <span class="text-gray-500 text-sm">2023</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 5 -->
+                <div class="project-card bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer" 
+                     data-category="web" data-project="social">
+                    <img src="https://kimi-web-img.moonshot.cn/img/cdn.prod.website-files.com/85cb6556f43c15fd92a52b25a2f5041c97edfb1d.jpeg" alt="Social Platform" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Plataforma Social</h3>
+                        <p class="text-gray-600 mb-4">Red social para profesionales creativos con enfoque en portafolios colaborativos</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Web</span>
+                            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Social</span>
+                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Community</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-blue-600 font-medium">Ver detalles</span>
+                            <span class="text-gray-500 text-sm">2023</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 6 -->
+                <div class="project-card bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer" 
+                     data-category="research" data-project="banking">
+                    <img src="https://kimi-web-img.moonshot.cn/img/assets.justinmind.com/9d23a0190ca4454c7476e4528122c3e947a23255.png" alt="Banking App" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">App Bancaria</h3>
+                        <p class="text-gray-600 mb-4">Investigación y rediseño de experiencia móvil para banca personal</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">UX Research</span>
+                            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Mobile</span>
+                            <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">Finance</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-blue-600 font-medium">Ver detalles</span>
+                            <span class="text-gray-500 text-sm">2022</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Modal -->
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modal-body">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-white mb-4">¿Tienes un proyecto en mente?</h2>
+            <p class="text-xl text-blue-100 mb-8">
+                Estoy disponible para proyectos freelance y colaboraciones
+            </p>
+            <button onclick="window.location.href='contact.html'" 
+                    class="bg-white text-blue-600 px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transform hover:scale-105 transition-all duration-300 shadow-lg text-lg">
+                Comenzar Proyecto
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold mb-4">Omar Razo</h3>
+                <p class="text-gray-400 mb-6">Diseñador UX/UI</p>
+                <div class="flex justify-center space-x-6 mb-8">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <span class="sr-only">LinkedIn</span>
+                        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <span class="sr-only">Dribbble</span>
+                        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0C5.374 0 0 5.373 0 12s5.374 12 12 12 12-5.373 12-12S18.626 0 12 0zm7.568 5.302c.703.294 1.341.675 1.92 1.133-1.445.801-3.173 1.188-4.82 1.188-.519 0-1.041-.05-1.56-.149.48-1.021 1.08-1.976 1.8-2.864.72-.888 1.56-1.68 2.46-2.308z"/>
+                        </svg>
+                    </a>
+                </div>
+                <p class="text-gray-500 text-sm">
+                    © 2024 Omar Razo. Todos los derechos reservados.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Particle Background (simplified version)
+        let particles = [];
+        let particleCount = 30;
+
+        function setup() {
+            let canvas = createCanvas(windowWidth, windowHeight);
+            canvas.parent('particle-container');
+            
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function draw() {
+            clear();
+            
+            for (let particle of particles) {
+                particle.update();
+                particle.display();
+            }
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+
+        class Particle {
+            constructor() {
+                this.x = random(width);
+                this.y = random(height);
+                this.vx = random(-0.3, 0.3);
+                this.vy = random(-0.3, 0.3);
+                this.size = random(2, 4);
+                this.opacity = random(0.1, 0.2);
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                if (this.x < 0) this.x = width;
+                if (this.x > width) this.x = 0;
+                if (this.y < 0) this.y = height;
+                if (this.y > height) this.y = 0;
+            }
+            
+            display() {
+                noStroke();
+                fill(255, 255, 255, this.opacity * 255);
+                ellipse(this.x, this.y, this.size);
+            }
+        }
+
+        // Project filtering and modal functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const projectCards = document.querySelectorAll('.project-card');
+            const modal = document.getElementById('projectModal');
+            const modalBody = document.getElementById('modal-body');
+            const closeBtn = document.querySelector('.close');
+
+            // Filter functionality
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const filter = this.getAttribute('data-filter');
+                    
+                    // Update active button
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Filter projects
+                    projectCards.forEach(card => {
+                        const category = card.getAttribute('data-category');
+                        if (filter === 'all' || category === filter) {
+                            card.style.display = 'block';
+                            setTimeout(() => {
+                                card.classList.add('animate');
+                            }, 100);
+                        } else {
+                            card.classList.remove('animate');
+                            setTimeout(() => {
+                                card.style.display = 'none';
+                            }, 300);
+                        }
+                    });
+                });
+            });
+
+            // Project modal functionality
+            projectCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const projectId = this.getAttribute('data-project');
+                    openProjectModal(projectId);
+                });
+            });
+
+            // Close modal
+            closeBtn.addEventListener('click', closeModal);
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+
+            function closeModal() {
+                modal.style.display = 'none';
+            }
+
+            function openProjectModal(projectId) {
+                const projectData = getProjectData(projectId);
+                modalBody.innerHTML = generateModalContent(projectData);
+                modal.style.display = 'block';
+            }
+
+            function getProjectData(projectId) {
+                const projects = {
+                    taskmanager: {
+                        title: 'App de Gestión de Tareas',
+                        category: 'Mobile App Design',
+                        year: '2024',
+                        image: 'resources/mobile-app-1.png',
+                        description: 'Una aplicación móvil completa para la gestión de tareas personales y profesionales.',
+                        challenge: 'Los usuarios necesitaban una forma más intuitiva y visual de organizar sus tareas diarias sin sentirse abrumados.',
+                        solution: 'Diseñé una interfaz limpia con sistema de categorización por colores, vistas de calendario interactivas y notificaciones inteligentes.',
+                        results: 'Incremento del 40% en la productividad reportada por usuarios y 4.8/5 estrellas en tiendas de aplicaciones.',
+                        tools: ['Figma', 'Principle', 'Maze', 'UserTesting']
+                    },
+                    analytics: {
+                        title: 'Dashboard Analytics',
+                        category: 'Web Application',
+                        year: '2024',
+                        image: 'resources/dashboard-1.png',
+                        description: 'Panel de control empresarial con visualizaciones de datos en tiempo real.',
+                        challenge: 'Los analistas necesitaban acceso rápido a métricas complejas sin ser abrumados por la cantidad de información.',
+                        solution: 'Implementé un sistema de widgets personalizables con diferentes niveles de detalle según el rol del usuario.',
+                        results: 'Reducción del 60% en tiempo de análisis de datos y mejora en la toma de decisiones estratégicas.',
+                        tools: ['Figma', 'Adobe XD', 'D3.js', 'Chart.js']
+                    },
+                    ecommerce: {
+                        title: 'Rediseño E-commerce',
+                        category: 'E-commerce Platform',
+                        year: '2023',
+                        image: 'resources/ecommerce-1.png',
+                        description: 'Rediseño completo de plataforma de comercio electrónico para mejorar conversiones.',
+                        challenge: 'La plataforma tenía una tasa de conversión baja y alto porcentaje de abandono de carritos.',
+                        solution: 'Simplifiqué el proceso de compra, mejoré la navegación y añadí recomendaciones personalizadas.',
+                        results: 'Incremento del 35% en tasa de conversión y reducción del 45% en abandono de carritos.',
+                        tools: ['Figma', 'Hotjar', 'Google Analytics', 'Optimizely']
+                    },
+                    fitness: {
+                        title: 'App de Fitness',
+                        category: 'Mobile Health App',
+                        year: '2023',
+                        image: 'https://kimi-web-img.moonshot.cn/img/mir-s3-cdn-cf.behance.net/670361a43ceb97b509128a73ac74d7e2eb3e7fb8.png',
+                        description: 'Aplicación integral para seguimiento de rutinas de ejercicio y nutrición.',
+                        challenge: 'Los usuarios abandonaban la app después de pocas semanas por falta de motivación y seguimiento.',
+                        solution: 'Incorporé gamificación, retos semanales y sistema de comunidad para mantener la motivación.',
+                        results: 'Retención de usuarios aumentó al 75% después de 3 meses, superando la media del sector.',
+                        tools: ['Figma', 'Adobe Illustrator', 'InVision', 'TestFlight']
+                    },
+                    social: {
+                        title: 'Plataforma Social Creativa',
+                        category: 'Social Platform',
+                        year: '2023',
+                        image: 'https://kimi-web-img.moonshot.cn/img/cdn.prod.website-files.com/85cb6556f43c15fd92a52b25a2f5041c97edfb1d.jpeg',
+                        description: 'Red social para profesionales creativos con enfoque en portafolios colaborativos.',
+                        challenge: 'Los creativos necesitaban una plataforma para mostrar su trabajo y colaborar con otros profesionales.',
+                        solution: 'Creé un sistema de proyectos colaborativos con herramientas de feedback y versión colaborativa.',
+                        results: 'Más de 10,000 usuarios activos en los primeros 6 meses y 500 proyectos colaborativos creados.',
+                        tools: ['Figma', 'Framer', 'Webflow', 'Slack API']
+                    },
+                    banking: {
+                        title: 'App Bancaria',
+                        category: 'Financial Technology',
+                        year: '2022',
+                        image: 'https://kimi-web-img.moonshot.cn/img/assets.justinmind.com/9d23a0190ca4454c7476e4528122c3e947a23255.png',
+                        description: 'Investigación y rediseño de experiencia móvil para banca personal.',
+                        challenge: 'Los usuarios encontraban la app bancaria compleja y poco intuitiva para operaciones diarias.',
+                        solution: 'Reestructuré la arquitectura de información y simplifiqué los flujos de tareas principales.',
+                        results: 'Incremento del 50% en satisfacción del usuario y reducción del 40% en llamadas de soporte.',
+                        tools: ['Figma', 'User Interviews', 'UsabilityHub', 'Lookback']
+                    }
+                };
+                
+                return projects[projectId] || {};
+            }
+
+            function generateModalContent(project) {
+                return `
+                    <div class="relative">
+                        <img src="${project.image}" alt="${project.title}" class="w-full h-64 object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                        <div class="absolute bottom-6 left-6 text-white">
+                            <h2 class="text-3xl font-bold mb-2">${project.title}</h2>
+                            <p class="text-lg opacity-90">${project.category} • ${project.year}</p>
+                        </div>
+                    </div>
+                    <div class="p-8">
+                        <div class="mb-8">
+                            <h3 class="text-2xl font-semibold mb-4">Descripción del Proyecto</h3>
+                            <p class="text-gray-700 leading-relaxed">${project.description}</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                            <div>
+                                <h4 class="text-lg font-semibold mb-3 text-blue-600">El Reto</h4>
+                                <p class="text-gray-700">${project.challenge}</p>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold mb-3 text-green-600">La Solución</h4>
+                                <p class="text-gray-700">${project.solution}</p>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold mb-3 text-purple-600">Resultados</h4>
+                                <p class="text-gray-700">${project.results}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t pt-6">
+                            <h4 class="text-lg font-semibold mb-3">Herramientas Utilizadas</h4>
+                            <div class="flex flex-wrap gap-2">
+                                ${project.tools.map(tool => 
+                                    `<span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">${tool}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Animate project cards on load
+            setTimeout(() => {
+                projectCards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add('animate');
+                    }, index * 100);
+                });
+            }, 200);
+        });
+    </script>
+</body>
+</html>
